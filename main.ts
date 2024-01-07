@@ -1,4 +1,4 @@
-import { App, MarkdownView, Modal, Plugin, PluginManifest, PluginSettingTab, Setting } from 'obsidian';
+import { App, MarkdownView, Modal, Plugin, PluginManifest, PluginSettingTab, Setting, Notice } from 'obsidian';
 import { getAgent, VeramoAgent } from 'veramo';
 
 // Remember to rename these classes and interfaces!
@@ -23,6 +23,7 @@ export default class MyPlugin extends Plugin {
 		super(app, manifest)
 		this.signCurrentNoteCheckCallback = this.signCurrentNoteCheckCallback.bind(this)
 		this.signCurrentNote = this.signCurrentNote.bind(this)
+		this.openSignModalCheckCallback = this.openSignModalCheckCallback.bind(this)
 	}
 
 	async onload() {
@@ -71,7 +72,15 @@ export default class MyPlugin extends Plugin {
 			data: markdownView?.data,
 			keyRef: identifier.keys[0].kid,
 		})
-		console.log(proof)
+
+		const file = this.app.workspace.getActiveFile()
+		if (!file) return
+
+		this.app.fileManager.processFrontMatter(file, frontmatter => {
+			frontmatter['did'] = did
+			frontmatter['proof'] = proof
+		})
+		new Notice('Note signed by ' + did, 2000)
 	}
 
 	openSignModalCheckCallback(checking: boolean) {
