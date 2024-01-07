@@ -1,4 +1,4 @@
-import { App, MarkdownView, Modal, Plugin, PluginManifest, PluginSettingTab, Setting, Notice } from 'obsidian';
+import { App, MarkdownView, Modal, Plugin, PluginManifest, PluginSettingTab, Setting, Notice, TFile } from 'obsidian';
 import { getAgent, VeramoAgent } from 'veramo';
 
 // Remember to rename these classes and interfaces!
@@ -18,12 +18,14 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 	agent: VeramoAgent;
+	statusBarItem: HTMLElement;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest)
 		this.signCurrentNoteCheckCallback = this.signCurrentNoteCheckCallback.bind(this)
 		this.signCurrentNote = this.signCurrentNote.bind(this)
 		this.openSignModalCheckCallback = this.openSignModalCheckCallback.bind(this)
+		this.verifyFile = this.verifyFile.bind(this)
 	}
 
 	async onload() {
@@ -31,8 +33,10 @@ export default class MyPlugin extends Plugin {
 
 		this.agent = getAgent({ url: this.settings.apiUrl, apiKey: this.settings.apiKey });
 
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
+		this.statusBarItem = this.addStatusBarItem();
+
+		this.registerEvent(this.app.workspace.on('file-open', this.verifyFile));
+		//	this.registerEvent(this.app.workspace.on('editor-change', this.verifyFile));
 
 		this.addCommand({
 			id: 'open-sign-modal',
@@ -47,6 +51,23 @@ export default class MyPlugin extends Plugin {
 		})
 
 		this.addSettingTab(new SampleSettingTab(this.app, this));
+	}
+
+	async verifyFile(file: TFile) {
+		this.statusBarItem.setText('⏳')
+		const cache = this.app.metadataCache.getFileCache(file)
+		const did = cache?.frontmatter?.did
+		const proof = cache?.frontmatter?.proof
+		//TODO: check signature
+		// fake check
+		const verified = proof.length === 86
+
+		setTimeout(() => {
+			this.statusBarItem.setText(verified ? '✅' : '❌')
+			if (!verified) {
+				new Notice('Verification failed', 2000)
+			}
+		}, 1000)
 	}
 
 	signCurrentNoteCheckCallback(checking: boolean) {
