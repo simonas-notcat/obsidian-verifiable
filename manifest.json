@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-verifiable",
+	"name": "Verifiable Notes",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Sign and verify your notes using your Veramo Cloud Agent.",
+	"author": "Simonas Karuzas",
+	"authorUrl": "https://simonas.not.cat",
 	"isDesktopOnly": false
 }

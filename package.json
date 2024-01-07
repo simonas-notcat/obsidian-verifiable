@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-verifiable",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Sign and verify your notes using your Veramo Cloud Agent.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
