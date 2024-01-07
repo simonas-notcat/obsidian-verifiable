@@ -54,13 +54,14 @@ export default class MyPlugin extends Plugin {
 	}
 
 	async verifyFile(file: TFile) {
-		this.statusBarItem.setText('⏳')
 		const cache = this.app.metadataCache.getFileCache(file)
 		const did = cache?.frontmatter?.did
 		const proof = cache?.frontmatter?.proof
+		if (!proof) return;
 		//TODO: check signature
 		// fake check
-		const verified = proof.length === 86
+		const verified = proof?.length === 86
+		this.statusBarItem.setText('⏳')
 
 		setTimeout(() => {
 			this.statusBarItem.setText(verified ? '✅' : '❌')
